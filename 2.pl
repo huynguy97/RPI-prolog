@@ -12,4 +12,4 @@ nnodes(node((X,A), (Y,B)), N) :-
 
 makeBinary(X,leaf):-
 	X < 1,
-	leaf is (leaf,0).
+	leaf is 5.
