@@ -10,6 +10,17 @@ nnodes(node((X,A), (Y,B)), N) :-
     nnodes( (Y,B) ,Res2),
     N is 1 + Res1 + Res2.
 
-makeBinary(X,leaf):-
-	X < 1,
-	leaf is 5.
+
+makeBinary(N, Tree):-
+	N < 0,
+	Tree = false.
+makeBinary(N,Tree):-
+	N = 0,
+	Tree = leaf(N).
+makeBinary(N, Tree):-
+	N > 0,
+        NewN is N-1,
+        makeBinary(NewN, R1),
+        Tree = node(R1, R1, N).
+	
+	
