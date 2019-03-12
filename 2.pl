@@ -1,3 +1,4 @@
+/**/
 isBinaryTree((leaf, N)).
 isBinaryTree(node((X,A),(Y,B))) :-
     isBinaryTree((X,A)),
