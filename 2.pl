@@ -23,4 +23,7 @@ makeBinary(N, Tree):-
         makeBinary(NewN, R1),
         Tree = node(R1, R1, N).
 	
-	
+makeTree(N, NumberOfChildren, Tree):-
+	N=0,
+	NumberOfChildren=0,
+	Tree = false.
