@@ -23,10 +23,11 @@ makeBinary(N, Tree):-
 makeTree(N,NumberOfChildren,Tree):-
 	N>0,
 	NumberOfChildren>0,
-    Tree = true. 
+        Tree = true. 
 
 createNode( [Head | Tails], NumberOfChildren, List ):-
 	NumberOfChildren = 0,
 	List = [].
 	
         
+
