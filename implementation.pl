@@ -1,4 +1,5 @@
 % node(conflict_set, path, predecessor)
+:- [diagnosis].
 
 checkSingleHSet(_, []).
 checkSingleHSet( [Head | Tail] , List):-
@@ -10,34 +11,31 @@ checkHSets(A, [B | C]):-
     checkSingleHSet(A, B),
     checkHSets(A, C).
 
-labelNode( CS , node(A,B,C), Return ):- % label existing node with CS
-    append(A, CS, T),
-    Return = node(T, B, C).
-
-createNode(CS, Path, Papa, CreatedNode):- % create a new node.
+createNode(CS, Path, Papa, CreatedNode) :- % create a new node.
     CreatedNode = node(CS, Path, Papa).
 
-createChildren( node([], _, _), OldChildren, NewChildren):- 
-    append(OldChildren, [], New),
-    NewChildren = New.
-createChildren( node([ A | B ], Path, Papa), OldChildren, NewChildren):-
+createChildren(node(_,_,_), [], []).
+createChildren(node(CS, Path, Predecessor), [A | B], Children) :-
     append(Path, [A], NewPath),
-    createNode([], NewPath, node([ A | B ], Path, Papa) , CreatedNode),
-    append(OldChildren, [CreatedNode], TempChildren),
-    createChildren( node( B, Path, Papa), TempChildren, TempTempChildren),
-    NewChildren = TempTempChildren.
+    createNode([], NewPath, node(CS, Path, Predecessor), CreatedNode),
+    createChildren(node(CS,Path,Predecessor), B, NewChildren),
+    append([CreatedNode], NewChildren, Children).
 
-extractPath(node(_, Path,_), NewPath):-
-    NewPath = Path.
-% 1. Pick random cs as start for node. In this case A. 
-% 2. Check path for hitting set, if hs, mark else label with conflict set. 
-% 3. Return
-%  Confict sets en Tree als een lijst. [ [x1,x2], [x1,a2,o1] ]
-makeHittingTree([], _).
-makeHittingTree( [ A | B ] , Tree):-
-    createNode(A, [], emptySet, StartingNode),
-    createChildren(StartingNode, [], [FirstChild | Rest] ),
-    extractPath(FirstChild, Path),
-    checkHsets(Path, [A|B]). % branchen hier?
+makeHittingTree(SD, COMP, OBS, Tree) :-
+    makeHittingTree(SD, COMP, OBS, [node([],[],[])], Tree).
+makeHittingTree(_, _, _, [], []).
+makeHittingTree(SD, COMP, OBS, [node(CS, Path, Predecessor) | OtherNodes], Tree) :-
+    not(tp(SD, COMP, OBS, Path, _)),
+    makeHittingTree(SD, COMP, OBS, OtherNodes, NewTree), % continue with the rest of the nodes.
+    append([leaf(Path, Predecessor)], NewTree, Tree). % leaf doesn't have CS because it is always empty
+makeHittingTree(SD, COMP, OBS, [node(_, Path, Predecessor) | OtherNodes], Tree) :-
+    tp(SD, COMP, OBS, Path, CS),
+    createChildren(node(CS, Path, Predecessor), CS, Children), 
+    append(OtherNodes, Children, NewNodes),
+    makeHittingTree(SD, COMP, OBS, NewNodes, NewTree),
+    append([node(CS, Path, Predecessor)], NewTree, Tree).
+
+
     
-    
+     
+     
