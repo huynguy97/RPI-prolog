@@ -36,6 +36,16 @@ makeHittingTree(SD, COMP, OBS, [node(_, Path, Predecessor) | OtherNodes], Tree) 
     append([node(CS, Path, Predecessor)], NewTree, Tree).
 
 
-    
-     
-     
+isLeaf(X):-
+	=(X, leaf(_,_)).
+filterLeafs(Tree, Output):- 
+	include( isLeaf, Tree, Output).
+
+gatherDiagnoses([],Diags):- % Give a tree, which is a list, and return a list of diagnoses.
+	Diags = [[]].
+gatherDiagnoses( [ Firstelement | RestTree] , Diaganoses):-
+	gatherDiagnoses(RestTree, NewDiagnoses),
+	=(Firstelement, leaf(X,_)),
+	append([X], NewDiagnoses, Final),
+	Diaganoses = Final.
+	
