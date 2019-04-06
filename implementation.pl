@@ -1,30 +1,17 @@
 % node(conflict_set, path, predecessor)
 :- [diagnosis].
 
-checkSingleHSet(_, []).
-checkSingleHSet( [Head | Tail] , List):-
-    member(Head, List);
-    checkSingleHSet(Tail, List).
-
-checkHSets(_, []).
-checkHSets(A, [B | C]):-
-    checkSingleHSet(A, B),
-    checkHSets(A, C).
-
-createNode(CS, Path, Papa, CreatedNode) :- % create a new node.
-    CreatedNode = node(CS, Path, Papa).
-
 createChildren(node(_,_,_), [], []).
 createChildren(node(CS, Path, Predecessor), [A | B], Children) :-
     append(Path, [A], NewPath),
-    createNode([], NewPath, node(CS, Path, Predecessor), CreatedNode),
+    CreatedNode = node([], NewPath, node(CS, Path, Predecessor)),
     createChildren(node(CS,Path,Predecessor), B, NewChildren),
     append([CreatedNode], NewChildren, Children).
 
 makeHittingTree(SD, COMP, OBS, Tree) :-
     makeHittingTree(SD, COMP, OBS, [node([],[],[])], Tree).
 makeHittingTree(_, _, _, [], []).
-makeHittingTree(SD, COMP, OBS, [node(CS, Path, Predecessor) | OtherNodes], Tree) :-
+makeHittingTree(SD, COMP, OBS, [node(_, Path, Predecessor) | OtherNodes], Tree) :-
     not(tp(SD, COMP, OBS, Path, _)),
     makeHittingTree(SD, COMP, OBS, OtherNodes, NewTree), % continue with the rest of the nodes.
     append([leaf(Path, Predecessor)], NewTree, Tree). % leaf doesn't have CS because it is always empty
@@ -35,17 +22,12 @@ makeHittingTree(SD, COMP, OBS, [node(_, Path, Predecessor) | OtherNodes], Tree) 
     makeHittingTree(SD, COMP, OBS, NewNodes, NewTree),
     append([node(CS, Path, Predecessor)], NewTree, Tree).
 
-
-isLeaf(X):-
-	=(X, leaf(_,_)).
-filterLeafs(Tree, Output):- 
-	include( isLeaf, Tree, Output).
-
-gatherDiagnoses([],Diags):- % Give a tree, which is a list, and return a list of diagnoses.
-	Diags = [[]].
-gatherDiagnoses( [ Firstelement | RestTree] , Diaganoses):-
-	gatherDiagnoses(RestTree, NewDiagnoses),
-	=(Firstelement, leaf(X,_)),
-	append([X], NewDiagnoses, Final),
-	Diaganoses = Final.
+gatherDiagnoses([], []). % Give a tree, which is a list, and return a list of diagnoses.
+gatherDiagnoses([FirstElement | RestTree], Diagnoses) :-
+    not(FirstElement = leaf(_, _)),
+    gatherDiagnoses(RestTree, Diagnoses).
+gatherDiagnoses([FirstElement | RestTree] , Diagnoses) :-
+	FirstElement = leaf(X,_),
+    gatherDiagnoses(RestTree, NewDiagnoses),
+    append([X], NewDiagnoses, Diagnoses).
 	
