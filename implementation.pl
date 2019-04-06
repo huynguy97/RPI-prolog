@@ -18,6 +18,7 @@ makeHittingTree(SD, COMP, OBS, [node(_, Path, Predecessor) | OtherNodes], Tree) 
     makeHittingTree(SD, COMP, OBS, NewNodes, NewTree),
     append([node(CS, Path, Predecessor)], NewTree, Tree).
 makeHittingTree(SD, COMP, OBS, [node(_, Path, Predecessor) | OtherNodes], Tree) :-
+    not(tp(SD, COMP, OBS, Path, _)),
     makeHittingTree(SD, COMP, OBS, OtherNodes, NewTree), % continue with the rest of the nodes.
     append([leaf(Path, Predecessor)], NewTree, Tree). % leaf doesn't have CS because it is always empty
 
@@ -27,4 +28,14 @@ gatherDiagnoses([FirstElement | RestTree] , Diagnoses) :-
     gatherDiagnoses(RestTree, NewDiagnoses),
     append([X], NewDiagnoses, Diagnoses).
 gatherDiagnoses([FirstElement | RestTree], Diagnoses) :-
+    not(FirstElement = leaf(_, _)),
     gatherDiagnoses(RestTree, Diagnoses).	
+
+gatherMinimalDiagnoses([], []).
+gatherMinimalDiagnoses([FirstElement | Rest], Output) :-
+    (   select(T, Rest, L1), 
+        ord_subset(FirstElement, T)  
+    ->  gatherMinimalDiagnoses([FirstElement|L1], Output) 
+    ;   Output = [FirstElement|L2],
+        gatherMinimalDiagnoses(Rest, L2)
+    ).
