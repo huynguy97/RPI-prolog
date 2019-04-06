@@ -30,12 +30,12 @@ makeHittingTree(SD, COMP, OBS, [node(_, Path, Predecessor) | OtherNodes], Tree) 
 % Gather diagnoses for a tree.
 gatherDiagnoses([], []). 
 gatherDiagnoses([FirstElement | RestTree] , Diagnoses) :-
-	FirstElement = leaf(X,_),
+    FirstElement = leaf(X,_),
     gatherDiagnoses(RestTree, NewDiagnoses),
     append([X], NewDiagnoses, Diagnoses).
 gatherDiagnoses([FirstElement | RestTree], Diagnoses) :-
     not(FirstElement = leaf(_, _)),
-    gatherDiagnoses(RestTree, Diagnoses).	
+    gatherDiagnoses(RestTree, Diagnoses).   
 
 % Gather minimal diagnoses on a ordered list of lists by removing supersets.
 % Credit: https://stackoverflow.com/questions/13733496/prolog-removing-supersets-in-a-list-of-lists
@@ -51,9 +51,9 @@ gatherMinimalDiagnosesSorted([FirstElement | Rest], Output) :-
 % Order the list of lists.
 orderListofLists([], []).
 orderListofLists([ A | B ], OrderedList) :-
-	orderListofLists(B, NewOrderedLists),
-	sort(A, Ordered),
-	append([Ordered], NewOrderedLists, OrderedList).
+    orderListofLists(B, NewOrderedLists),
+    sort(A, Ordered),
+    append([Ordered], NewOrderedLists, OrderedList).
 
 % Sort the list of lists by length.
 % Partial credit (changed atom_length to length): http://www.swi-prolog.org/pldoc/man?predicate=keysort/2 
@@ -65,7 +65,7 @@ sortListofLists(Lists, SortedList) :-
 % Gather minimal diagnoses by first ordering & sorting the diagnoses and then removing supersets.
 gatherMinimalDiagnoses(Diagnoses, Output) :-
     orderListofLists(Diagnoses, OrderedDiagnoses),
-	sortListofLists(OrderedDiagnoses, SortedDiagnoses),
+    sortListofLists(OrderedDiagnoses, SortedDiagnoses),
     gatherMinimalDiagnosesSorted(SortedDiagnoses, Output).
 
 % Get the minimal diagnoses for a problem by:
