@@ -39,3 +39,11 @@ gatherMinimalDiagnoses([FirstElement | Rest], Output) :-
     ;   Output = [FirstElement|L2],
         gatherMinimalDiagnoses(Rest, L2)
     ).
+
+sortListofLists([], []).
+sortListofLists([ A | B ], SortedList):-
+	sortListofLists(B, NewSortedLists),
+	sort(A, Sorted),
+	append([Sorted], NewSortedLists, Ez),
+	SortedList = Ez.
+	
