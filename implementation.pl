@@ -49,7 +49,7 @@ gatherMinimalDiagnosesSorted([FirstElement | Rest], Output) :-
 
 % Sort the list of lists by making it an ordered list of lists.
 sortListofLists([], []).
-sortListofLists([ A | B ], SortedList):-
+sortListofLists([ A | B ], SortedList) :-
 	sortListofLists(B, NewSortedLists),
 	sort(A, Sorted),
 	append([Sorted], NewSortedLists, SortedList).
