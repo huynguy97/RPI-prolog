@@ -1,3 +1,4 @@
+:- use_module(library(pairs)). % For sorting on length
 :- [diagnosis].
 
 % Created by Huy Nguyen s4791916, Jeroen Wijenbergh s4792459
@@ -47,16 +48,24 @@ gatherMinimalDiagnosesSorted([FirstElement | Rest], Output) :-
         gatherMinimalDiagnoses(Rest, L2)
     ).
 
-% Sort the list of lists by making it an ordered list of lists.
-sortListofLists([], []).
-sortListofLists([ A | B ], SortedList) :-
-	sortListofLists(B, NewSortedLists),
-	sort(A, Sorted),
-	append([Sorted], NewSortedLists, SortedList).
+% Order the list of lists.
+orderListofLists([], []).
+orderListofLists([ A | B ], OrderedList) :-
+	orderListofLists(B, NewOrderedLists),
+	sort(A, Ordered),
+	append([Ordered], NewOrderedLists, OrderedList).
 
-% Gather minimal diagnoses by first ordering the diagnoses and then removing supersets.
+% Sort the list of lists by length.
+% Partial credit (changed atom_length to length): http://www.swi-prolog.org/pldoc/man?predicate=keysort/2 
+sortListofLists(Lists, SortedList) :-
+    map_list_to_pairs(length, Lists, Pairs),
+    keysort(Pairs, Sorted),
+    pairs_values(Sorted, SortedList).
+
+% Gather minimal diagnoses by first ordering & sorting the diagnoses and then removing supersets.
 gatherMinimalDiagnoses(Diagnoses, Output) :-
-    sortListofLists(Diagnoses, SortedDiagnoses),
+    orderListofLists(Diagnoses, OrderedDiagnoses),
+	sortListofLists(OrderedDiagnoses, SortedDiagnoses),
     gatherMinimalDiagnosesSorted(SortedDiagnoses, Output).
 
 % Get the minimal diagnoses for a problem by:
@@ -67,3 +76,4 @@ main(SD, COMP, OBS, MinimalDiagnoses) :-
     makeHittingTree(SD, COMP, OBS, HittingTree),
     gatherDiagnoses(HittingTree, Diagnoses),
     gatherMinimalDiagnoses(Diagnoses, MinimalDiagnoses).
+
